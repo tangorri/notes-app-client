@@ -1,4 +1,4 @@
-import { Note } from './note.js';
+import { Note } from '../model/note.js';
 
 export class NoteManager {
   static async list() {

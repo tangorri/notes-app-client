@@ -1,6 +1,6 @@
-import { Note } from './note.js';
-import { NoteManager } from './note-manager.js';
-import { NoteElement } from './note-element.js';
+import { Note } from './model/note.js';
+import { NoteManager } from './api/note-manager.js';
+import { NoteElement } from './view/note-element.js';
 
 // le modèle
 let notes = [];
