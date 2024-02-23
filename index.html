@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prise de note</title>
+</head>
+
+<body>
+
+  <style>
+    #list li {
+      animation: fadeIn 1s
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    #error-msg {
+      color: red;
+      display: none;
+    }
+  </style>
+
+  <form>
+    <input type="text" id="my-input">
+    <!-- <select id="authors-select"></select> -->
+    <div id="error-msg"><span>{{minChar}}</span> caractères minimum sont requis</div>
+  </form>
+  <div>Nombre de notes : <span id="count">0</span></div>
+  <ol id="list">
+  </ol>
+
+  <script async type="module" src="index.js">
+  </script>
+</body>
+
+</html>
