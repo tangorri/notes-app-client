@@ -1,13 +1,13 @@
 import { Note } from './model/note.js';
 import { NoteManager } from './api/note-manager.js';
-import { NoteElement } from './view/note-element.js';
+import { NoteList } from './view/note-list.js'
 
 // le modèle
 let notes = [];
 const minChars = 6;
 
 const inputElem = document.getElementById('my-input');
-const listElem = document.getElementById('list');
+const listElem = new NoteList(document.getElementById('list'));
 const errorMsg = document.getElementById('error-msg');
 const form = document.getElementsByTagName('form')[0];
 
@@ -15,25 +15,6 @@ function updateCounter() {
   document.getElementById('count').innerText = notes.length;
 }
 
-function addNoteToModel() {
-  // ajouter la nouvelle note dans
-  notes.push(inputElem.value);
-}
-
-function addNoteToView() {
-  // création de l'element d'affichage
-  let newItem = document.createElement('li');
-  newItem.innerText = inputElem.value;
-
-  // ajouter dans l'arbre / DOM
-  // on l'ajoute comme enfant de la liste
-  listElem.appendChild(newItem);
-}
-
-function addNote() {
-  addNoteToModel();
-  addNoteToView();
-}
 
 function resetInput() {
   // reset du champs de saisie
@@ -63,45 +44,48 @@ inputElem.addEventListener('change', function (event) {
   }
 });
 
-// gérer la soumission du formulaire.
-form.addEventListener('submit', async function (event) {
+const onNewNoteSubmit = async () => {
   // empêcher le rechargement de la page(comportement par défaut d'un form)
-  event.preventDefault();
   if (isValid()) {
     // instantiation d'une nouvelle note.
     // on instancie avec ID à null (mysql s'occupera tout seul de générer ce numéro)
-    const newNote = new Note(null, inputElem.value);
-
+    const newNote = new Note(null, inputElem.value.trim());
+    NoteManager.create(newNote);
     await NoteManager.create(newNote);
     await refreshNote();
-    // updateCounter();
     resetInput();
   }
+};
+
+// gérer la soumission du formulaire.
+form.addEventListener('submit', async function (event) {
+  event.preventDefault();
+  onNewNoteSubmit();
 });
 
 listElem.addEventListener('click', event => {
   console.log('event target: ', event.target);
-  // on convertie en nombre la valeur l'attribut data-id de l'élément
-  // cliqué.
+  // on convertie en nombre la valeur l'attribut data-id de l'élément cliqué.
   const id = +event.target.getAttribute('data-id');
-  // si j'ai bien cliqué sur un élément qui est associé à un ID de note (id est bien un nombre)
-  if (!isNaN(id)) {
-    NoteManager.remove(id);
-  }
+  // élément cliqué est associé à un ID de note ? (aka id est bien un nombre?)
+  if (isNaN(id)) return;
+
+  NoteManager.remove(id);
+  NoteManager.list();
+  listElem.update(notes);
+  updateCounter();
 });
 
 document.querySelector('#error-msg span').innerText = minChars;
 
 async function refreshNote() {
-  notes = await NoteManager.list();
-  let noteElements = notes.map(note => NoteElement.create(note));
-
-  // dans la vue on purge la liste
-  // while (listElem.children) listElem.removeChild(0);
-  listElem.innerHTML = '';
-
-  // maintenant que la liste est vide ajouter, enfant par enfant
-  noteElements.forEach(noteElem => listElem.appendChild(noteElem));
+  listElem.update(notes);
 }
 
-refreshNote();
+const loadDatas = async () => {
+  notes = await NoteManager.list();
+  updateCounter();
+  listElem.update(notes);
+};
+
+loadDatas();
