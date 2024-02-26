@@ -45,47 +45,47 @@ inputElem.addEventListener('change', function (event) {
 });
 
 const onNewNoteSubmit = async () => {
-  // empêcher le rechargement de la page(comportement par défaut d'un form)
-  if (isValid()) {
-    // instantiation d'une nouvelle note.
-    // on instancie avec ID à null (mysql s'occupera tout seul de générer ce numéro)
-    const newNote = new Note(null, inputElem.value.trim());
-    NoteManager.create(newNote);
-    await NoteManager.create(newNote);
-    await refreshNote();
-    resetInput();
-  }
+  // instantiation d'une nouvelle note.
+  // on instancie avec ID à null (mysql s'occupera tout seul de générer ce numéro)
+  const newNote = new Note(null, inputElem.value.trim());
+  resetInput();
+  NoteManager.create(newNote);
+  await NoteManager.create(newNote);
+  refreshAll();
 };
 
 // gérer la soumission du formulaire.
 form.addEventListener('submit', async function (event) {
+  // empêcher le rechargement de la page(comportement par défaut d'un form)
+  // https://www.freecodecamp.org/news/manage-default-behavior-in-browser/
   event.preventDefault();
+  if (!isValid) return false;
   onNewNoteSubmit();
 });
 
-listElem.addEventListener('click', event => {
+listElem.addEventListener('click', async (event) => {
   console.log('event target: ', event.target);
   // on convertie en nombre la valeur l'attribut data-id de l'élément cliqué.
   const id = +event.target.getAttribute('data-id');
   // élément cliqué est associé à un ID de note ? (aka id est bien un nombre?)
   if (isNaN(id)) return;
 
-  NoteManager.remove(id);
-  NoteManager.list();
-  listElem.update(notes);
-  updateCounter();
+  await NoteManager.remove(id);
+  refreshAll();
 });
 
 document.querySelector('#error-msg span').innerText = minChars;
 
-async function refreshNote() {
+async function refreshAll() {
+  notes = await NoteManager.list();
   listElem.update(notes);
+  updateCounter();
 }
 
-const loadDatas = async () => {
-  notes = await NoteManager.list();
-  updateCounter();
-  listElem.update(notes);
-};
+const appInit = async () => {
+  await refreshAll();
+}
 
-loadDatas();
+document.addEventListener("DOMContentLoaded", (_event) => {
+  appInit();
+});
