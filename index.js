@@ -59,7 +59,7 @@ form.addEventListener('submit', async function (event) {
   // empêcher le rechargement de la page(comportement par défaut d'un form)
   // https://www.freecodecamp.org/news/manage-default-behavior-in-browser/
   event.preventDefault();
-  if (!isValid) return false;
+  if (!isValid()) return false;
   onNewNoteSubmit();
 });
 
