@@ -69,7 +69,18 @@ listElem.addEventListener('click', async (event) => {
   // élément cliqué est associé à un ID de note ? (aka id est bien un nombre?)
   if (isNaN(id)) return;
 
-  await NoteManager.remove(id);
+  // click sur modif ou supprimer ?
+  if (event.target.className === 'modify') {
+    // on filter sur les éléments qui on l'id correspondant.
+    // on doit donc faire un [0] pour récupérer l'élément.
+    const noteToUpdate = notes.filter(note => note.id === id)[0];
+    // on demande la saisie de la nouvelle valeur pour ce champs
+    noteToUpdate.text = window.prompt('nouvelle valeur pour le champs text', noteToUpdate.text);
+    await NoteManager.update(noteToUpdate);
+  } else if (event.target.className === 'delete') {
+    await NoteManager.remove(id);
+  }
+
   refreshAll();
 });
 

@@ -23,6 +23,16 @@ export class NoteManager {
     return data;
   }
 
+  static async update(note) {
+    const response = await fetch(BASE_API_URL + note.id, {
+      method: "PUT",
+      headers: HEADERS_API,
+      body: JSON.stringify(note)
+    });
+    const data = await response.json();
+    return data;
+  }
+
   static async remove(id) {
     const response = await fetch(BASE_API_URL + id, {
       method: "DELETE",
