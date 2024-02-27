@@ -29,13 +29,17 @@ export class NoteList {
 
   #createListElement(note) {
     const liElem = document.createElement('li');
-    liElem.innerHTML = `${note.text} - <button data-id="${note.id}">X</button>`;
+    liElem.innerHTML = `
+    ${note.text} -
+    <button data-id=${note.id} class="modify">Modifier</button>
+    <button data-id="${note.id} class="delete">X</button>
+    `;
     return liElem;
   }
 
 
   // adaptateur, permet de faire un addEventListener fur l'élément DOM (qui implémente EventTarget) encapsulé
-  addEventListener (eventType, callback) {
+  addEventListener(eventType, callback) {
     this.#domElement.addEventListener(eventType, callback);
   }
 }
