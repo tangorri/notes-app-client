@@ -49,7 +49,6 @@ const onNewNoteSubmit = async () => {
   // on instancie avec ID à null (mysql s'occupera tout seul de générer ce numéro)
   const newNote = new Note(null, inputElem.value.trim());
   resetInput();
-  NoteManager.create(newNote);
   await NoteManager.create(newNote);
   refreshAll();
 };
